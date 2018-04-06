@@ -78,45 +78,66 @@ public class Main {
             //what to do in any of the valid directions
             switch (direction) {
                 case 'L':
-                    if (room[person.getY()][person.getX() - 1] != 'x') {
-                        room[person.getY()][person.getX()] = '_';
-                        person.setX(person.getX() - 1);
-                        room[person.getY()][person.getX()] = person.getType();
-                        break;
-                    } else {
-                        System.out.println("Ups! There is an obstacle there! Insert a new direction.");
+                    try {
+                        if (room[person.getY()][person.getX() - 1] != 'x') {
+                            room[person.getY()][person.getX()] = '_';
+                            person.setX(person.getX() - 1);
+                            room[person.getY()][person.getX()] = person.getType();
+                            break;
+                        } else {
+                            System.out.println("Ups! There is an obstacle there! Insert a new direction.");
+                            break;
+                        }
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        System.out.println("WALL! New direction please!");
                         break;
                     }
                 case 'R':
-                    if (room[person.getY()][person.getX() + 1] != 'x') {
-                        room[person.getY()][person.getX()] = '_';
-                        person.setX(person.getX() + 1);
-                        room[person.getY()][person.getX()] = person.getType();
-                        break;
-                    } else {
-                        System.out.println("Ups! There is an obstacle there! Insert a new direction.");
+                    try {
+                        if (room[person.getY()][person.getX() + 1] != 'x') {
+                            room[person.getY()][person.getX()] = '_';
+                            person.setX(person.getX() + 1);
+                            room[person.getY()][person.getX()] = person.getType();
+                            break;
+                        } else {
+                            System.out.println("Ups! There is an obstacle there! Insert a new direction.");
+                            break;
+                        }
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        System.out.println("WALL! New direction please!");
                         break;
                     }
                 case 'B':
-                    if (room[person.getY() + 1][person.getX()] != 'x') {
-                        room[person.getY()][person.getX()] = '_';
-                        person.setY(person.getY() + 1);
-                        room[person.getY()][person.getX()] = person.getType();
-                        break;
-                    } else {
-                        System.out.println("Ups! There is an obstacle there! Insert a new direction.");
+                    try {
+                        if (room[person.getY() + 1][person.getX()] != 'x') {
+                            room[person.getY()][person.getX()] = '_';
+                            person.setY(person.getY() + 1);
+                            room[person.getY()][person.getX()] = person.getType();
+                            break;
+                        } else {
+                            System.out.println("Ups! There is an obstacle there! Insert a new direction.");
+                            break;
+                        }
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        System.out.println("WALL! New direction please!");
                         break;
                     }
                 case 'F':
-                    if (room[person.getY() - 1][person.getX()] != 'x') {
-                        room[person.getY()][person.getX()] = '_';
-                        person.setY(person.getY() - 1);
-                        room[person.getY()][person.getX()] = person.getType();
-                        break;
-                    } else {
-                        System.out.println("Ups! There is an obstacle there! Insert a new direction.");
+                    try {
+                        if (room[person.getY() - 1][person.getX()] != 'x') {
+                            room[person.getY()][person.getX()] = '_';
+                            person.setY(person.getY() - 1);
+                            room[person.getY()][person.getX()] = person.getType();
+                            break;
+                        } else {
+                            System.out.println("Ups! There is an obstacle there! Insert a new direction.");
+                            break;
+                        }
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        System.out.println("WALL! New direction please!");
                         break;
                     }
+
             }
         }
         System.out.println(">- HYPE! You won! -<");
