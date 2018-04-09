@@ -36,7 +36,7 @@ public class Main {
         //obstacles positions
         int obstacleX = random.nextInt(size);
         int obstacleY = random.nextInt(size);
-        for (int obstacles = 0; obstacles < size;) {
+        for (int obstacles = 0; obstacles < size; ) {
             if (room[obstacleY][obstacleX] != '_') {
                 obstacleX = random.nextInt(size);
                 obstacleY = random.nextInt(size);
@@ -45,6 +45,8 @@ public class Main {
                 obstacles++;
             }
         }
+        //prints the directions ONCE.
+        System.out.print("\nL - Left\nR - Right\nF - Forward\nB - Backward\n\n");
 
         //if personPosition == doorPosition the game ends
         while ((person.getY() != door.getY()) || (person.getX() != door.getX())) {
@@ -57,31 +59,59 @@ public class Main {
                 }
             }
 
-            System.out.print("\nL - Left\nR - Right\nF - Forward\nB - Backward\nInsert the letter of the direction: ");
+            System.out.print("Insert the direction with the format LetterMultiplier: ");
             String directionString = in.next();
 
-            //checks if the direction is only a letter or a word
-            while (directionString.length() > 1) {
-                System.out.print("Insert only the letter of the direction: ");
-                directionString = in.next();
+            //valid letters and multipliers
+            char[] validLetters = {'L', 'R', 'F', 'B'};
+            int[] validMultipliers = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+            //direction letter and multiplier
+            char directionLetter, directionMultiplier;
+            int multiplier;
+
+            if (directionString.length() != 2 ){
+                directionLetter = directionString.charAt(0);
+                multiplier = 1;
+
+            } else {
+                directionLetter = directionString.charAt(0);
+                directionMultiplier = directionString.charAt(1);
+                multiplier = Character.getNumericValue(directionMultiplier);
             }
 
-            //if the string has only a char
-            char direction = directionString.charAt(0);
+
+            System.out.println(directionLetter);
+            System.out.println(multiplier);
 
             //tests if the direction is valid
-            while (!(direction == 'L' || direction == 'R' || direction == 'F' || direction == 'B')) {
-                System.out.print("\nInvalid direction.\nInsert a new one: ");
-                direction = in.next().charAt(0);
+            for (int i = 0; i < validLetters.length; i++) {
+                if (directionLetter == validLetters[i]) {
+                    break;
+                } else if (i == 3) {
+                    System.out.print("\nInvalid Letter.\nInsert a new one: ");
+                    directionLetter = in.next().charAt(0);
+                }
+            }
+
+            //tests if the multiplier is valid
+            for (int i = 0; i < validMultipliers.length; i++) {
+                if (multiplier != validMultipliers[i]) {
+                    break;
+                } else if (i == 8){
+                    System.out.print("\nInvalid Multiplier.\nInsert a new one: ");
+                    directionMultiplier = in.next().charAt(1);
+                    multiplier = Character.getNumericValue(directionMultiplier);
+                }
             }
 
             //what to do in any of the valid directions
-            switch (direction) {
+            switch (directionLetter) {
                 case 'L':
                     try {
-                        if (room[person.getY()][person.getX() - 1] != 'x') {
+                        if (room[person.getY()][person.getX() - multiplier] != 'x') {
                             room[person.getY()][person.getX()] = '_';
-                            person.setX(person.getX() - 1);
+                            person.setX(person.getX() - multiplier);
                             room[person.getY()][person.getX()] = person.getType();
                             break;
                         } else {
@@ -94,9 +124,9 @@ public class Main {
                     }
                 case 'R':
                     try {
-                        if (room[person.getY()][person.getX() + 1] != 'x') {
+                        if (room[person.getY()][person.getX() + multiplier] != 'x') {
                             room[person.getY()][person.getX()] = '_';
-                            person.setX(person.getX() + 1);
+                            person.setX(person.getX() + multiplier);
                             room[person.getY()][person.getX()] = person.getType();
                             break;
                         } else {
@@ -109,9 +139,9 @@ public class Main {
                     }
                 case 'B':
                     try {
-                        if (room[person.getY() + 1][person.getX()] != 'x') {
+                        if (room[person.getY() + multiplier][person.getX()] != 'x') {
                             room[person.getY()][person.getX()] = '_';
-                            person.setY(person.getY() + 1);
+                            person.setY(person.getY() + multiplier);
                             room[person.getY()][person.getX()] = person.getType();
                             break;
                         } else {
@@ -124,9 +154,9 @@ public class Main {
                     }
                 case 'F':
                     try {
-                        if (room[person.getY() - 1][person.getX()] != 'x') {
+                        if (room[person.getY() - multiplier][person.getX()] != 'x') {
                             room[person.getY()][person.getX()] = '_';
-                            person.setY(person.getY() - 1);
+                            person.setY(person.getY() - multiplier);
                             room[person.getY()][person.getX()] = person.getType();
                             break;
                         } else {
