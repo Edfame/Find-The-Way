@@ -13,11 +13,10 @@ public class Main {
         //room size
         System.out.print("Insert the room width/heigh: ");
         int size = in.nextInt();
-        char[][] room = new char[size][];
+        char[][] room = new char[size][size];
 
         //if the space is not a door nor a person is '_'
         for (int y = 0; y < room.length; y++) {
-            room[y] = new char[size];
             for (int x = 0; x < room[y].length; x++) {
                 room[y][x] = '_';
             }
@@ -48,6 +47,9 @@ public class Main {
         //prints the directions ONCE.
         System.out.print("\nL - Left\nR - Right\nF - Forward\nB - Backward\n\n");
 
+        //skip \n
+        String skip = in.nextLine();
+
         //if personPosition == doorPosition the game ends
         while ((person.getY() != door.getY()) || (person.getX() != door.getX())) {
 
@@ -59,8 +61,8 @@ public class Main {
                 }
             }
 
-            System.out.print("Insert the direction with the format LetterMultiplier: ");
-            String directionString = in.next();
+            System.out.print("Insert the direction with the format Letter Multiplier: ");
+            String directionString = in.nextLine();
 
             //valid letters and multipliers
             char[] validLetters = {'L', 'R', 'F', 'B'};
@@ -70,19 +72,15 @@ public class Main {
             char directionLetter, directionMultiplier;
             int multiplier;
 
-            if (directionString.length() != 2 ){
+            if (directionString.length() != 3 ){
                 directionLetter = directionString.charAt(0);
                 multiplier = 1;
 
             } else {
                 directionLetter = directionString.charAt(0);
-                directionMultiplier = directionString.charAt(1);
+                directionMultiplier = directionString.charAt(2);
                 multiplier = Character.getNumericValue(directionMultiplier);
             }
-
-
-            System.out.println(directionLetter);
-            System.out.println(multiplier);
 
             //tests if the direction is valid
             for (int i = 0; i < validLetters.length; i++) {
@@ -100,7 +98,7 @@ public class Main {
                     break;
                 } else if (i == 8){
                     System.out.print("\nInvalid Multiplier.\nInsert a new one: ");
-                    directionMultiplier = in.next().charAt(1);
+                    directionMultiplier = in.next().charAt(2);
                     multiplier = Character.getNumericValue(directionMultiplier);
                 }
             }
