@@ -4,170 +4,285 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
 
-        Scanner in = new Scanner(System.in);
-        Random random = new Random();
-        Point person, door;
+    //Given a room, initializes with a "default" Point.
+    private static Point[][] initializeRoom() {
 
-        //room size
+        Scanner input = new Scanner(System.in);
+        int size;
+
+        //Getting the room size from the std input.
         System.out.print("Insert the room width/heigh: ");
-        int size = in.nextInt();
-        char[][] room = new char[size][size];
+        size = input.nextInt();
 
-        //if the space is not a door nor a person is '_'
-        for (int y = 0; y < room.length; y++) {
-            for (int x = 0; x < room[y].length; x++) {
-                room[y][x] = '_';
+        Point [][] room = new Point[size][size];
+
+        //Initializing all the points in the room
+        for (Point[] row : room) {
+            for (int index = 0; index < row.length; index++) {
+                row[index] = new Point();
             }
         }
 
-        //door position, the door is represented by a D
-        door = new Point(random.nextInt(size), random.nextInt(size), 'D');
-        room[door.getY()][door.getX()] = door.getType();
+        return room;
+    }
 
-        //person position, the person is represented by a P
+    //Given a room, sets a Door on a random position.
+    private static Door setDoor(Point[][] room) {
+
+        Random random = new Random();
+
+        int x = random.nextInt(room.length);
+        int y = random.nextInt(room.length);
+
+        room[y][x] = new Door(x,y);
+
+        return (Door) room[y][x];
+
+    }
+
+    //Given a room, sets a Person with a position different from the Door's.
+    private static Person setPerson(Point[][] room) {
+
+        Random random = new Random();
+        int x, y;
+
         do {
-            person = new Point(random.nextInt(size), random.nextInt(size), 'P');
-        } while (person.getX() == door.getX() || person.getY() == door.getY());
-        room[person.getY()][person.getX()] = person.getType();
 
-        //obstacles positions
-        int obstacleX = random.nextInt(size);
-        int obstacleY = random.nextInt(size);
-        for (int obstacles = 0; obstacles < size; ) {
-            if (room[obstacleY][obstacleX] != '_') {
-                obstacleX = random.nextInt(size);
-                obstacleY = random.nextInt(size);
+            x = random.nextInt(room.length);
+            y = random.nextInt(room.length);
+
+        }while (room[y][x].getType() == 'D');
+
+        room[y][x] = new Person(x,y);
+
+        return (Person) room[y][x];
+    }
+
+    //Given a room, inserts random Obstacles.
+    private static void setObstacles(Point[][] room) {
+
+        Random random = new Random();
+
+        int obstacleX = random.nextInt(room.length);
+        int obstacleY = random.nextInt(room.length);
+
+        for (int obstacles = 0; obstacles < room.length; ) {
+
+            if (room[obstacleY][obstacleX].getType() != '_') {
+
+                obstacleX = random.nextInt(room.length);
+                obstacleY = random.nextInt(room.length);
+
             } else {
-                room[obstacleY][obstacleX] = 'x';
+
+                room[obstacleY][obstacleX] = new Obstacle();
                 obstacles++;
             }
         }
-        //prints the directions ONCE.
-        System.out.print("\nL - Left\nR - Right\nF - Forward\nB - Backward\n\n");
+    }
 
-        //skip \n
-        String skip = in.nextLine();
+    //Prints the content of the room given.
+    private static void printRoom(Point[][] room) {
 
-        //if personPosition == doorPosition the game ends
-        while ((person.getY() != door.getY()) || (person.getX() != door.getX())) {
-
-            //to display the room
-            for (int y = 0; y < size; y++) {
-                for (int x = 0; x < size; x++) {
-                    if (x < size - 1) System.out.print(room[y][x]);
-                    else System.out.print(room[y][x] + "\n");
-                }
+        for (Point[] row: room) {
+            for (Point point : row) {
+                System.out.print(point.getType());
             }
+            System.out.println("");
 
-            System.out.print("Insert the direction with the format Letter Multiplier: ");
-            String directionString = in.nextLine();
-
-            //valid letters and multipliers
-            char[] validLetters = {'L', 'R', 'F', 'B'};
-            int[] validMultipliers = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-
-            //direction letter and multiplier
-            char directionLetter, directionMultiplier;
-            int multiplier;
-
-            if (directionString.length() != 3 ){
-                directionLetter = directionString.charAt(0);
-                multiplier = 1;
-
-            } else {
-                directionLetter = directionString.charAt(0);
-                directionMultiplier = directionString.charAt(2);
-                multiplier = Character.getNumericValue(directionMultiplier);
-            }
-
-            //tests if the direction is valid
-            for (int i = 0; i < validLetters.length; i++) {
-                if (directionLetter == validLetters[i]) {
-                    break;
-                } else if (i == 3) {
-                    System.out.print("\nInvalid Letter.\nInsert a new one: ");
-                    directionLetter = in.next().charAt(0);
-                }
-            }
-
-            //tests if the multiplier is valid
-            for (int i = 0; i < validMultipliers.length; i++) {
-                if (multiplier != validMultipliers[i]) {
-                    break;
-                } else if (i == 8){
-                    System.out.print("\nInvalid Multiplier.\nInsert a new one: ");
-                    directionMultiplier = in.next().charAt(2);
-                    multiplier = Character.getNumericValue(directionMultiplier);
-                }
-            }
-
-            //what to do in any of the valid directions
-            switch (directionLetter) {
-                case 'L':
-                    try {
-                        if (room[person.getY()][person.getX() - multiplier] != 'x') {
-                            room[person.getY()][person.getX()] = '_';
-                            person.setX(person.getX() - multiplier);
-                            room[person.getY()][person.getX()] = person.getType();
-                            break;
-                        } else {
-                            System.out.println("Ups! There is an obstacle there! Insert a new direction.");
-                            break;
-                        }
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        System.out.println("WALL! New direction please!");
-                        break;
-                    }
-                case 'R':
-                    try {
-                        if (room[person.getY()][person.getX() + multiplier] != 'x') {
-                            room[person.getY()][person.getX()] = '_';
-                            person.setX(person.getX() + multiplier);
-                            room[person.getY()][person.getX()] = person.getType();
-                            break;
-                        } else {
-                            System.out.println("Ups! There is an obstacle there! Insert a new direction.");
-                            break;
-                        }
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        System.out.println("WALL! New direction please!");
-                        break;
-                    }
-                case 'B':
-                    try {
-                        if (room[person.getY() + multiplier][person.getX()] != 'x') {
-                            room[person.getY()][person.getX()] = '_';
-                            person.setY(person.getY() + multiplier);
-                            room[person.getY()][person.getX()] = person.getType();
-                            break;
-                        } else {
-                            System.out.println("Ups! There is an obstacle there! Insert a new direction.");
-                            break;
-                        }
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        System.out.println("WALL! New direction please!");
-                        break;
-                    }
-                case 'F':
-                    try {
-                        if (room[person.getY() - multiplier][person.getX()] != 'x') {
-                            room[person.getY()][person.getX()] = '_';
-                            person.setY(person.getY() - multiplier);
-                            room[person.getY()][person.getX()] = person.getType();
-                            break;
-                        } else {
-                            System.out.println("Ups! There is an obstacle there! Insert a new direction.");
-                            break;
-                        }
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        System.out.println("WALL! New direction please!");
-                        break;
-                    }
-
-            }
         }
+    }
+
+    //Prints the move that are allowed to make.
+    private static void printMoves() {
+
+        System.out.println("\nL - Left\nR - Right\nU - Up\nD - Down\n");
+    }
+
+    //Moves a person on the given room.
+    private static void getPlay(Point[][] room, Person person) {
+
+        Scanner input = new Scanner(System.in);
+        char direction;
+        int multiplier;
+
+        System.out.print("Play format: \"DirectionMultiplier\" > ");
+
+        String play = input.nextLine();
+
+        if(play.length() < 2) {
+
+            direction = play.charAt(0);
+            multiplier = 1;
+
+        } else {
+
+            direction = play.charAt(0);
+            multiplier = Character.getNumericValue(play.charAt(1));
+        }
+
+        switch (direction) {
+
+            case 'L':
+                try {
+
+                    for (int i = person.getX(); i != person.getX() - multiplier ; i--) {
+                        if (room[person.getY()][i] instanceof Obstacle){
+                            System.out.println("Ups! There is an obstacle there! Insert a new direction.");
+                            return;
+                        }
+                    }
+
+                    if (!(room[person.getY()][person.getX() - multiplier] instanceof  Obstacle)) {
+
+                        room[person.getY()][person.getX()] = new Point(person.getX(), person.getY(), '_');
+                        person.setX(person.getX() - multiplier);
+                        room[person.getY()][person.getX()] = person;
+
+                    } else {
+
+                        System.out.println("Ups! There is an obstacle there! Insert a new direction.");
+
+                    }
+                    break;
+
+                } catch (ArrayIndexOutOfBoundsException e) {
+
+                    System.out.println("WALL! New direction please!");
+                    break;
+                }
+
+            case 'R':
+                try {
+
+                    for (int i = person.getX(); i != person.getX() + multiplier ; i++) {
+                        if (room[person.getY()][i] instanceof Obstacle){
+                            System.out.println("Ups! There is an obstacle there! Insert a new direction.");
+                            return;
+                        }
+                    }
+
+                    if (!(room[person.getY()][person.getX() + multiplier] instanceof Obstacle)) {
+
+                        room[person.getY()][person.getX()] = new Point(person.getX(), person.getY(), '_');
+                        person.setX(person.getX() + multiplier);
+                        room[person.getY()][person.getX()] = person;
+
+                    } else {
+
+                        System.out.println("Ups! There is an obstacle there! Insert a new direction.");
+
+                    }
+                    break;
+
+                } catch (ArrayIndexOutOfBoundsException e) {
+
+                    System.out.println("WALL! New direction please!");
+                    break;
+                }
+
+            case 'U':
+
+                for (int i = person.getY(); i != person.getX() - multiplier ; i--) {
+                    if (room[i][person.getX()] instanceof Obstacle){
+                        System.out.println("Ups! There is an obstacle there! Insert a new direction.");
+                        return;
+                    }
+                }
+
+                try {
+                    if (!(room[person.getY() - multiplier][person.getX()] instanceof  Obstacle)) {
+
+                        room[person.getY()][person.getX()] = new Point(person.getX(), person.getY(), '_');
+                        person.setY(person.getY() - multiplier);
+                        room[person.getY()][person.getX()] = person;
+
+                    } else {
+
+                        System.out.println("Ups! There is an obstacle there! Insert a new direction.");
+
+                    }
+
+                    break;
+
+                } catch (ArrayIndexOutOfBoundsException e) {
+
+                    System.out.println("WALL! New direction please!");
+                    break;
+
+                }
+
+            case 'D':
+
+                try {
+
+                    for (int i = person.getY(); i != person.getX() + multiplier ; i++) {
+                        if (room[i][person.getX()] instanceof Obstacle){
+                            System.out.println("Ups! There is an obstacle there! Insert a new direction.");
+                            return;
+                        }
+                    }
+
+                    if (!(room[person.getY() + multiplier][person.getX()] instanceof  Obstacle)) {
+
+                        room[person.getY()][person.getX()] = new Point(person.getX(), person.getY(), '_');
+                        person.setY(person.getY() + multiplier);
+                        room[person.getY()][person.getX()] = person;
+
+                    } else {
+
+                        System.out.println("Ups! There is an obstacle there! Insert a new direction.");
+
+                    }
+                    break;
+
+                } catch (ArrayIndexOutOfBoundsException e) {
+
+                    System.out.println("WALL! New direction please!");
+                    break;
+
+                }
+
+            default:
+                System.out.println("\tINSERT A VALID DIRECTION!");
+                break;
+        }
+
+    }
+
+    public static void main(String[] args) {
+
+        //Variables
+        Point[][] room;
+        Door door;
+        Person person;
+
+        //initializing the room.
+        room = initializeRoom();
+
+        //setting the door in the room.
+        door = setDoor(room);
+
+        //setting the person in the room.
+        person = setPerson(room);
+
+        //setting some obstacles in the room.
+        setObstacles(room);
+
+        do {
+
+            //printing the room's content.
+            printRoom(room);
+
+            //prints the possible moves.
+            printMoves();
+
+            getPlay(room, person);
+
+        } while ((person.getY() != door.getY()) || (person.getX() != door.getX()));
+
         System.out.println(">- HYPE! You won! -<");
+
     }
 }
